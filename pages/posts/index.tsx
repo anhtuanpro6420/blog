@@ -1,35 +1,20 @@
-import Link from "next/link";
+import axios from "axios";
 
-const DUMMY_POSTS = [
-  {
-    _id: '1',
-    title: 'Post 1',
-    content: '<div>Content 1</div>'
-  },
-  {
-    _id: '2',
-    title: 'Post 2',
-    content: '<div>Content 2</div>'
-  },
-  {
-    _id: '3',
-    title: 'Post 3',
-    content: '<div>Content 3</div>'
-  },
-  {
-    _id: '4',
-    title: 'Post 4',
-    content: '<div>Content 4</div>'
-  },
-]
-
-export default function Posts() {
+export default function Posts({ posts = [], metadata }: { posts: Array<any>, metadata: any }) {
+  const createMarkup = (content: string) => {
+    return {__html: content};
+  }
   return (
     <div>
-        Posts
-        <ul>
-            <li><Link href="/posts/test1">Test1</Link></li>
+        {posts.map(post => (
+          <ul key={post._id}>
+            <li>
+              <div className="title">{post.title}</div>
+              <div className="content" dangerouslySetInnerHTML={createMarkup(post.content)}></div>
+            </li>
         </ul>
+        ))}
+        
     </div>
   )
 }
@@ -48,11 +33,17 @@ export default function Posts() {
 // This function will run during build process
 // Using for data change not too much
 export async function getStaticProps() {
-  return {
-    props: {
-      posts: DUMMY_POSTS
-    },
-    revalidate: 3600 // This function will run during build process, so data might be out of date. 
-                    // Set it to ensure new content will update after x seconds of latest request then data will be updated
+  try {
+    const { data: { data: posts, metadata } } = await axios.get('http://localhost:4000/api/v1/posts');
+    return {
+      props: {
+        posts,
+        metadata
+      },
+      revalidate: 1 // This function will run during build process, so data might be out of date. 
+                      // Set it to ensure new content will update after x seconds of latest request then data will be updated
+    }
+  } catch (err) {
+    console.log(err);
   }
 }
