@@ -1,21 +1,66 @@
 import axios from "axios";
+import { List, Avatar, Space } from 'antd';
+import { MessageOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
+import React from "react";
+import { useRouter } from "next/router";
+import Head from "next/head";
+
+const IconText = ({ icon, text }: { icon: any, text: string }) => (
+  <Space>
+    {React.createElement(icon)}
+    {text}
+  </Space>
+);
 
 export default function Posts({ posts = [], metadata }: { posts: Array<any>, metadata: any }) {
-  const createMarkup = (content: string) => {
-    return {__html: content};
+  const router = useRouter()
+  const handleItemClicked = (item: any) => {
+    router.push(`/posts/${item._id}`)
   }
   return (
-    <div>
-        {posts.map(post => (
-          <ul key={post._id}>
-            <li>
-              <div className="title">{post.title}</div>
-              <div className="content" dangerouslySetInnerHTML={createMarkup(post.content)}></div>
-            </li>
-        </ul>
-        ))}
-        
-    </div>
+    <>
+    <Head>
+        <title>Posts Si blog</title>
+        <meta name="description" content="All technical posts" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+    <List
+    itemLayout="vertical"
+    size="large"
+    pagination={{
+      onChange: page => {
+        console.log(page);
+      },
+      pageSize: 10,
+    }}
+    dataSource={posts}
+    renderItem={item => (
+      <List.Item
+        key={item._id}
+        actions={[
+          <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+          <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+          <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+        ]}
+        extra={
+          <img
+            width={272}
+            alt="logo"
+            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+          />
+        }
+        onClick={() => handleItemClicked(item)}
+      >
+        <List.Item.Meta
+          avatar={<Avatar src={item.avatar} />}
+          title={<a href={""}>{item.title}</a>}
+          description={item.content}
+        />
+        {item.content}
+      </List.Item>
+    )}
+  />
+  </>
   )
 }
 

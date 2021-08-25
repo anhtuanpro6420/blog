@@ -1,8 +1,8 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import Layout from '../components/Layout'
+import Wrapper from '../components/Wrapper'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Layout><Component {...pageProps} /></Layout>
+  return <Wrapper><Component {...pageProps} /></Wrapper>
 }
 export default MyApp
